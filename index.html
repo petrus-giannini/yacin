@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!--
+  yacin — Yet Another Cyber Incident News
+  Copyright (C) 2026 Pietro
+  SPDX-License-Identifier: GPL-3.0-or-later
+-->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1217">
+<meta name="description" content="Aggregatore client-side di notizie su incidenti informatici nel mondo">
+<title>yacin · incidenti cyber</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <img src="icons/icon.svg" alt="" width="28" height="28">
+    <div>
+      <h1>yacin</h1>
+      <p id="status" class="status">Caricamento…</p>
+    </div>
+  </div>
+  <div class="actions">
+    <button id="btn-alert" class="icon-btn" aria-pressed="false" title="Alert per ogni nuovo incidente">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6Zm-2 15a2 2 0 0 0 4 0"/></svg>
+      <span class="lbl">Alert</span>
+    </button>
+    <button id="btn-refresh" class="icon-btn" title="Aggiorna ora">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg>
+      <span class="lbl">Aggiorna</span>
+    </button>
+  </div>
+</header>
+
+<section class="filters" aria-label="Filtri comuni a tutte le viste">
+  <div class="sevbar" id="sevbar" role="group" aria-label="Gravità"></div>
+  <div class="frow">
+    <input id="f-q" type="search" placeholder="Cerca vittima, gruppo, testata…" autocomplete="off">
+    <select id="f-type" aria-label="Tipo"><option value="">Tutti i tipi</option></select>
+    <select id="f-src" aria-label="Fonte">
+      <option value="">Tutte le fonti</option>
+      <option value="ransomware">ransomware.live</option>
+      <option value="hibp">Have I Been Pwned</option>
+      <option value="gdelt">GDELT (stampa mondiale)</option>
+      <option value="rss">Testate specializzate</option>
+    </select>
+    <select id="f-period" aria-label="Periodo">
+      <option value="1">Ultime 24 ore</option>
+      <option value="3">Ultimi 3 giorni</option>
+      <option value="7" selected>Ultimi 7 giorni</option>
+      <option value="30">Ultimi 30 giorni</option>
+    </select>
+  </div>
+  <div id="f-country" class="chip-country" hidden></div>
+</section>
+
+<main>
+  <section id="v-lista" class="view" aria-label="Elenco incidenti">
+    <p id="list-meta" class="meta-line"></p>
+    <ol id="list" class="list"></ol>
+    <p id="list-empty" class="empty" hidden>Nessun incidente con questi filtri.</p>
+  </section>
+
+  <section id="v-mappa" class="view" aria-label="Mappa" hidden>
+    <div class="geo-wrap">
+      <div id="map" class="geo"></div>
+      <aside id="map-panel" class="geo-panel" hidden></aside>
+    </div>
+    <p id="map-meta" class="meta-line"></p>
+  </section>
+
+  <section id="v-globo" class="view" aria-label="Globo 3D" hidden>
+    <div id="globe-opts" class="gopts">
+      <label><input type="checkbox" data-opt="rotate"> Rotazione automatica</label>
+      <label><input type="checkbox" data-opt="rings"> Onde sui paesi con incidenti nelle ultime 24 ore <span id="rings-n"></span></label>
+    </div>
+    <div class="geo-wrap">
+      <div id="globe" class="geo globe"></div>
+      <aside id="globe-panel" class="geo-panel" hidden></aside>
+    </div>
+    <p id="globe-meta" class="meta-line"></p>
+  </section>
+
+  <section id="v-fonti" class="view settings" aria-label="Fonti e impostazioni" hidden>
+    <h2>Stato delle fonti</h2>
+    <table class="srcs"><thead><tr><th>Fonte</th><th>Esito</th><th class="num">Elementi</th><th>Ora</th></tr></thead><tbody id="src-status"></tbody></table>
+
+    <h2>Alert</h2>
+    <div class="form">
+      <label>Gravità minima per l'alert
+        <select id="s-alertmin"></select>
+      </label>
+      <button id="s-test" class="btn">Invia una notifica di prova</button>
+      <p class="note" id="alert-note"></p>
+    </div>
+
+    <h2>Fonti</h2>
+    <div class="form" id="s-sources"></div>
+    <h3>Feed RSS</h3>
+    <ul id="s-feeds" class="feeds"></ul>
+    <form id="s-addfeed" class="form inline">
+      <input id="s-feedname" placeholder="Nome" required>
+      <input id="s-feedurl" type="url" placeholder="https://…/feed" required>
+      <button class="btn">Aggiungi feed</button>
+    </form>
+
+    <h2>Rete e aggiornamento</h2>
+    <div class="form">
+      <label>Aggiornamento ogni (minuti)<input id="s-refresh" type="number" min="5" max="240" step="1"></label>
+      <label>Conserva gli incidenti per (giorni)<input id="s-lookback" type="number" min="3" max="90" step="1"></label>
+      <label>Proxy CORS per ransomware.live <small>({url} = indirizzo codificato)</small><input id="s-proxy" type="text" spellcheck="false"></label>
+      <label>Convertitore RSS→JSON<input id="s-bridge" type="text" spellcheck="false"></label>
+      <div class="btns"><button id="s-save" class="btn primary">Salva impostazioni</button><button id="s-reset" class="btn">Ripristina predefiniti</button><button id="s-wipe" class="btn danger">Cancella dati locali</button></div>
+    </div>
+
+    <h2>Come viene stimata la gravità</h2>
+    <div class="legend" id="legend"></div>
+    <p class="note">Il punteggio parte dal tipo di incidente (ransomware 3, wiper 4, spionaggio 3, supply chain 3, violazione dati 2, DDoS 2, malware 2, sfruttamento vulnerabilità 2, altro 2) e sale di un punto per settore critico o pubblico, segnali di larga scala o fermo dei servizi, zero-day o attore statale, dati sensibili, conferma da 3 o più fonti; per Have I Been Pwned conta anche il numero di account. Scende di un punto se la vittima non è identificata. Il risultato è compreso tra 1 e 5 ed è una stima automatica: ogni scheda mostra le regole che l'hanno prodotta.</p>
+
+    <h2>Informazioni</h2>
+    <p class="note">yacin gira interamente nel browser: nessun server proprio. I dati arrivano da <a href="https://www.ransomware.live/apidocs" target="_blank" rel="noopener">ransomware.live</a> (rivendicazioni sui leak site), <a href="https://haveibeenpwned.com/API/v3" target="_blank" rel="noopener">Have I Been Pwned</a> (catalogo delle violazioni), <a href="https://www.gdeltproject.org/" target="_blank" rel="noopener">GDELT</a> (stampa mondiale) e dai feed delle testate elencate sopra. Le rivendicazioni dei gruppi ransomware non sono verificate. Software libero, licenza GNU GPL v3 o successiva.</p>
+  </section>
+</main>
+
+<nav class="tabs" aria-label="Viste">
+  <a href="#lista" data-v="lista"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Lista</a>
+  <a href="#mappa" data-v="mappa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2Zm6-2v14m6-12v14"/></svg>Mappa</a>
+  <a href="#globo" data-v="globo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>Globo</a>
+  <a href="#fonti" data-v="fonti"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Fonti</a>
+</nav>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-bg" data-close></div>
+  <article class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="d-title">
+    <button class="close" data-close aria-label="Chiudi">×</button>
+    <div id="d-body"></div>
+  </article>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin defer></script>
+<script src="core.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

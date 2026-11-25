@@ -1,0 +1,146 @@
+/* yacin — SPDX-License-Identifier: GPL-3.0-or-later */
+:root{
+  --bg:#0f1217; --panel:#171b22; --panel2:#1e2430; --line:#2a313d;
+  --ink:#e8ecf1; --mute:#9aa5b1; --accent:#e5383b;
+  --s1:#7d8a97; --s2:#3fa7d6; --s3:#f2c14e; --s4:#f78154; --s5:#e5383b;
+  --tabs-h:64px; --safe-b:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font:16px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:clip;padding-bottom:calc(var(--tabs-h) + var(--safe-b))}
+a{color:#8cc8ff}
+button,input,select{font:inherit;color:inherit}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2px solid #8cc8ff;outline-offset:2px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) max(4vw,14px) 10px;background:rgba(15,18,23,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{display:flex;gap:10px;align-items:center}
+.brand h1{margin:0;font-size:20px;line-height:1.1;letter-spacing:.01em}
+.status{margin:0;font:12.5px/1.3 "IBM Plex Mono",ui-monospace,monospace;color:var(--mute)}
+.status .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:0}
+.actions{display:flex;gap:6px}
+.icon-btn{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);cursor:pointer}
+.icon-btn svg{width:20px;height:20px}
+.icon-btn[aria-pressed=true]{background:#3a1416;border-color:var(--accent);color:#ffb3b5}
+.icon-btn.spin svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:520px){.icon-btn .lbl{display:none}}
+
+/* filtri */
+.filters{position:sticky;top:65px;z-index:15;padding:10px max(4vw,14px);background:var(--bg);border-bottom:1px solid var(--line)}
+.sevbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.sev-chip{display:flex;flex-direction:column;align-items:flex-start;gap:0;min-height:52px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel);cursor:pointer;text-align:left;border-left:4px solid var(--c)}
+.sev-chip b{font:500 20px/1.1 "IBM Plex Mono",monospace}
+.sev-chip span{font-size:12.5px;color:var(--mute)}
+.sev-chip[aria-pressed=false]{opacity:.38}
+.frow{display:grid;grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr));gap:6px}
+.frow input,.frow select,.form input,.form select{min-height:44px;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);width:100%}
+@media(max-width:760px){.frow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.frow input{grid-column:1/-1}.filters{position:static}
+  .sev-chip{padding:6px 8px}.sev-chip span{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}}
+.chip-country{margin-top:8px;display:inline-flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);font-size:14px}
+.chip-country button{border:0;background:#333b48;border-radius:999px;width:28px;height:28px;cursor:pointer}
+
+main{padding:0 max(4vw,14px)}
+.view{max-width:1240px;margin:0 auto}
+.meta-line{color:var(--mute);font-size:13.5px;margin:12px 0 8px}
+
+/* lista */
+.list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.item{display:grid;grid-template-columns:6px minmax(0,1fr);border:1px solid var(--line);background:var(--panel);border-radius:12px;overflow:hidden;cursor:pointer}
+.item:hover{background:var(--panel2)}
+.item .bar{background:var(--c)}
+.item .in{padding:10px 14px 12px}
+.item h3{margin:4px 0 4px;font-size:16.5px;line-height:1.3;font-weight:600;overflow-wrap:anywhere}
+.row{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;font-size:13.5px;color:var(--mute)}
+.badge{font:500 12px/1 "IBM Plex Mono",monospace;padding:4px 7px;border-radius:6px;background:var(--c);color:#111;white-space:nowrap}
+.new{font:500 11.5px/1 "IBM Plex Mono",monospace;padding:4px 6px;border-radius:6px;border:1px solid var(--accent);color:#ffb3b5}
+.time{font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+.empty{color:var(--mute);text-align:center;padding:40px 0}
+.more{display:block;margin:14px auto 24px;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--panel);cursor:pointer}
+
+/* mappa e globo */
+.geo-wrap{position:relative;margin-top:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0a0d12}
+.geo{height:calc(100dvh - 330px);min-height:360px}
+.globe{background:#05070a}
+.geo-panel{position:absolute;z-index:500;right:10px;top:10px;bottom:10px;width:min(360px,calc(100% - 20px));overflow:auto;
+  background:rgba(23,27,34,.97);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.geo-panel h3{margin:0 34px 4px 0;font-size:17px}
+.geo-panel .close{top:6px;right:6px}
+.geo-panel ol{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}
+.geo-panel li{padding:8px 10px;border-radius:8px;background:var(--panel2);border-left:4px solid var(--c);cursor:pointer;font-size:14px;line-height:1.35}
+.geo-panel .btn{margin-top:10px}
+@media(max-width:600px){.geo-panel{top:auto;height:55%;left:10px;width:auto}.geo{height:calc(100dvh - 190px)}}
+.leaflet-container{background:#0a0d12;font:inherit}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--panel);color:var(--ink)}
+.leaflet-control-attribution{background:rgba(15,18,23,.8)!important;color:var(--mute)!important}
+.leaflet-control-attribution a{color:#8cc8ff!important}
+.leaflet-bar a{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.globe-tip{background:rgba(15,18,23,.92);padding:6px 9px;border-radius:8px;border:1px solid var(--line);font:13px/1.35 "IBM Plex Sans",sans-serif;color:var(--ink)}
+
+/* schede dettaglio */
+.sheet{position:fixed;inset:0;z-index:1000;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.sheet-card{position:relative;width:min(760px,100%);max-height:88dvh;overflow:auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:16px 16px 0 0;padding:20px 20px calc(20px + var(--safe-b));animation:up .2s ease-out}
+@media(min-width:800px){.sheet{align-items:center}.sheet-card{border-radius:16px}}
+@keyframes up{from{transform:translateY(24px);opacity:0}}
+.close{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);font-size:22px;line-height:1;cursor:pointer}
+.sheet-card h2{margin:10px 40px 10px 0;font-size:22px;line-height:1.25;overflow-wrap:anywhere}
+.kv{display:grid;grid-template-columns:9em minmax(0,1fr);gap:6px 12px;margin:14px 0;font-size:14.5px}
+.kv dt{color:var(--mute)}.kv dd{margin:0;overflow-wrap:anywhere}
+.why{margin:6px 0 0;padding-left:18px;color:var(--mute);font-size:14px}
+.srclist{padding-left:18px}
+.sheet-card p{overflow-wrap:anywhere}
+
+/* impostazioni */
+.settings h2{font-size:19px;margin:28px 0 10px}
+.settings h3{font-size:16px;margin:18px 0 8px}
+.form{display:grid;gap:12px;max-width:640px}
+.form label{display:grid;gap:4px;font-size:14.5px;color:var(--mute)}
+.form label.check{display:flex;align-items:center;gap:10px;color:var(--ink);min-height:44px}
+.form label.check input{width:22px;height:22px;min-height:0}
+.form.inline{grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;margin-top:10px;max-width:none}
+@media(max-width:600px){.form.inline{grid-template-columns:minmax(0,1fr)}}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);cursor:pointer}
+.btn.primary{background:#2b5a86;border-color:#3c78b0}
+.btn.danger{border-color:#7a2a2c;color:#ffb3b5}
+.note{color:var(--mute);font-size:14px;max-width:70ch}
+.feeds{list-style:none;padding:0;margin:0;display:grid;gap:6px;max-width:760px}
+.feeds li{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.feeds li span{flex:1;overflow-wrap:anywhere;font-size:14px}
+.feeds li small{color:var(--mute)}
+.feeds input{width:22px;height:22px}
+.feeds button{min-height:36px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;padding:0 10px}
+table.srcs{width:100%;max-width:760px;border-collapse:collapse;font-size:14px}
+.srcs th,.srcs td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.srcs .num{text-align:right}
+.ok{color:#7bd389}.ko{color:#ff8a8c}
+.legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:760px}
+.legend div{padding:8px 10px;border-radius:8px;background:var(--panel);border-top:4px solid var(--c);font-size:14px}
+@media(max-width:600px){.legend{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* tab bar */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);height:calc(var(--tabs-h) + var(--safe-b));
+  padding-bottom:var(--safe-b);background:rgba(15,18,23,.97);border-top:1px solid var(--line)}
+.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--mute);text-decoration:none;font-size:12.5px}
+.tabs a svg{width:22px;height:22px}
+.tabs a[aria-current=page]{color:var(--ink)}
+.tabs a[aria-current=page] svg{color:var(--accent)}
+
+.toast{position:fixed;z-index:1100;left:50%;transform:translateX(-50%);bottom:calc(var(--tabs-h) + var(--safe-b) + 12px);max-width:min(560px,92vw);
+  padding:10px 14px;border-radius:10px;background:#26303d;border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.4);font-size:14.5px;cursor:pointer}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+/* OSM in tema scuro senza servizi a chiave: filtro CSS sui tasselli standard */
+.tiles-dark{filter:invert(1) hue-rotate(180deg) brightness(.82) contrast(.9) saturate(.6)}
+.leaflet-control-layers{background:var(--panel)!important;color:var(--ink);border:1px solid var(--line)!important}
+.leaflet-control-layers-toggle{filter:invert(1)}
+.gopts{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:12px;font-size:14px;color:var(--mute)}
+.gopts label{display:flex;align-items:center;gap:8px;min-height:40px;cursor:pointer}
+.gopts input{width:20px;height:20px}
+.geo.globe{height:calc(100dvh - 380px)}@media(max-width:600px){.geo.globe{height:calc(100dvh - 240px)}}

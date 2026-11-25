@@ -1,0 +1,23 @@
+{
+  "name": "yacin — incidenti informatici nel mondo",
+  "short_name": "yacin",
+  "description": "Aggregatore client-side di notizie su incidenti informatici, con gravità, alert, mappa e globo 3D.",
+  "lang": "it",
+  "start_url": "./index.html#lista",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1217",
+  "theme_color": "#0f1217",
+  "categories": ["news", "security"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "Mappa", "url": "./index.html#mappa" },
+    { "name": "Globo 3D", "url": "./index.html#globo" }
+  ]
+}
