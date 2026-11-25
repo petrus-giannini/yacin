@@ -5,7 +5,7 @@
  */
 importScripts('./core.js');
 
-const CACHE = 'yacin-v4';
+const CACHE = 'yacin-v5';
 const SHELL = [
   './', './index.html', './app.js', './core.js', './style.css', './countries.json',
   './manifest.webmanifest', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'
